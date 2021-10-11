@@ -36,7 +36,7 @@ const Formulario = ({ guardarBusquedaLetra }) => {
 
     return (
         <div className="bg-info">
-            {error ? <Error /> : null}
+            {error ? <Error mensaje="Todos los campos son obligatorios" /> : null}
             <div className="container">
                 <div className="row">
                     <form

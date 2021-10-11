@@ -1,9 +1,9 @@
 import React from 'react';
 
 
-const Error = () => {
+const Error = ({ mensaje }) => {
     return (
-        <p className="alert alert-danger text-center p-2">Todos los campos son obligatorios</p>
+        <p className="alert alert-danger text-center p-2">{mensaje}</p>
     );
 }
 

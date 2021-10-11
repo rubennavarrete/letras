@@ -2,6 +2,8 @@ import React, { Fragment, useState, useEffect } from 'react';
 import Formulario from './components/Formulario';
 import axios from 'axios';
 import Cancion from './components/Cancion';
+import Info from './components/Info';
+import Error from './components/Error';
 
 
 function App() {
@@ -9,6 +11,8 @@ function App() {
   // Definiendo el state 
   const [busquedaletara, guardarBusquedaLetra] = useState({});
   const [letra, guardarLetra] = useState('');
+  const [info, guardarInfo] = useState({});
+  const [error, guardarError] = useState(false);
 
   useEffect(() => {
     if (Object.keys(busquedaletara).length === 0) return;
@@ -16,10 +20,21 @@ function App() {
     const consultarApiLetra = async () => {
       const { artista, cancion } = busquedaletara;
       const url = `https://api.lyrics.ovh/v1/${artista}/${cancion}`
+      const url2 = `https://theaudiodb.com/api/v1/json/1/search.php?s=${artista}`;
 
-      const resultado = await axios(url);
-      guardarLetra(resultado.data.lyrics);
+      Promise.all([
+        axios(url),
+        axios(url2)
+      ]).then(data => {
+        guardarLetra(data[0].data.lyrics);
+        guardarInfo(data[1].data.artists[0]);
+        return;
+      }).catch(() => {
+        guardarError(true);
+        return;
+      });
     }
+    guardarError(false);
     consultarApiLetra();
   }, [busquedaletara]);
 
@@ -31,7 +46,12 @@ function App() {
 
       <div className="container mt-5">
         <div className="row">
-          <div className="col-md-6">Artista</div>
+          {error ? <Error mensaje="No pudimos encontrar lo que buscas intentalo otra ves!" /> : null}
+          <div className="col-md-6">
+            <Info
+              info={info}
+            />
+          </div>
           <div className="col-md-6">
             <Cancion
               letra={letra}
